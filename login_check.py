@@ -4,6 +4,7 @@ import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
 from selenium.webdriver.support.wait import WebDriverWait
+from chrome_proxy_extension import ProxyExtension
 
 
 userName_passWord = [] #get usernames and passwords in this list. format="username|password"
@@ -12,11 +13,36 @@ passWords = []
 accountCount = 0
 onlineAccounts = []
 
+##-------------------------------------------------------------------------------------------##
 
-for line in userName_passWord: #split the format into username and password
+#Setting up proxy:
+
+with open ("../IPRoyal_TR_rotating.txt", "r") as proxyCredentials:
+    proxyRaw = proxyCredentials.read()
+    proxyCredentials.close()
+
+splitter = proxyRaw.split(":")
+
+proxyIp = splitter[0]
+proxyPort = splitter[1]
+proxyUser = splitter[2]
+proxyPass = splitter[3]
+
+proxy = (proxyIp, proxyPort, proxyUser, proxyPass) #proxy with auth
+proxy_extension = ProxyExtension(*proxy)
+options = uc.ChromeOptions()
+options.add_argument(f"--load-extension={proxy_extension.directory}")
+
+##-------------------------------------------------------------------------------------------##
+
+#split the format into username and password
+
+for line in userName_passWord:
     splitter = line.split('|')
     userNames.append(splitter[0])
     passWords.append(splitter[1])
+
+# log keeping function
 
 def run_log(userName, passWord, isActive):
     if isActive == True:
@@ -27,7 +53,10 @@ def run_log(userName, passWord, isActive):
         print("FAIL --" + userName + '|' + passWord)
         accountCount = accountCount + 1
 
+##-------------------------------------------------------------------------------------------##
+
 #Main App:
+
 if __name__ == "__main__":
     for line in userNames:
         driver = uc.Chrome()
