@@ -1,5 +1,6 @@
 import time
 import autoit
+import os.path
 import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
@@ -17,7 +18,7 @@ onlineAccounts = []
 
 #Setting up proxy:
 
-with open ("../IPRoyal_TR_rotating.txt", "r") as proxyCredentials:
+with open (os.path.dirname(__file__) + "/../IPRoyal_TR_rotating.txt", "r") as proxyCredentials:
     proxyRaw = proxyCredentials.read()
     proxyCredentials.close()
 
