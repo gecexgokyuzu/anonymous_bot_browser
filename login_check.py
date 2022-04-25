@@ -29,10 +29,13 @@ proxyPort = splitter[1]
 proxyUser = splitter[2]
 proxyPass = splitter[3]
 
-proxy = (proxyIp, proxyPort, proxyUser, proxyPass) #proxy with auth
+proxy = (proxyIp, int(proxyPort), proxyUser, proxyPass) #proxy with auth
 proxy_extension = ProxyExtension(*proxy)
-options = uc.ChromeOptions()
-options.add_argument(f"--load-extension={proxy_extension.directory}")
+
+def SetProxyDriver():
+    options = uc.ChromeOptions()
+    options.add_argument(f"--load-extension={proxy_extension.directory}")
+    return options
 
 ##-------------------------------------------------------------------------------------------##
 
@@ -60,10 +63,10 @@ def run_log(userName, passWord, isActive):
 
 if __name__ == "__main__":
     for line in userNames:
-        driver = uc.Chrome()
+        driver = uc.Chrome(options=SetProxyDriver())
         driver.get("https://www.facebook.com")
         try:
-            time.sleep(2)
+            time.sleep(5)
 
             email_input = driver.find_element(By.ID, "email")
             email_input.click()
