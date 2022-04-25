@@ -22,8 +22,10 @@ def run_log(userName, passWord, isActive):
     if isActive == True:
         print("OK --" + userName + '|' + passWord)
         onlineAccounts.append(userName + '|' + passWord)
+        accountCount = accountCount + 1
     else:
         print("FAIL --" + userName + '|' + passWord)
+        accountCount = accountCount + 1
 
 #Main App:
 if __name__ == "__main__":
@@ -65,10 +67,10 @@ if __name__ == "__main__":
                 logincheck = WebDriverWait(driver, 5).until(
                     expect.element_to_be_clickable((By.XPATH, "//div[@aria-label='Hesap']")))
                 
+                driver.quit()
+
                 run_log(line, passWords[accountCount], True)
 
-                driver.quit()
-
             except Exception as e:
-                run_log(line, passWords[accountCount], False)
                 driver.quit()
+                run_log(line, passWords[accountCount], False)
