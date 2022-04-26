@@ -1,6 +1,7 @@
 import time
 import autoit
 import os.path
+import random
 import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
@@ -8,8 +9,13 @@ from selenium.webdriver.support.wait import WebDriverWait
 from chrome_proxy_extension import ProxyExtension
 from user_agent import generate_user_agent
 
+#get usernames and passwords in this list. format="username|password"
 
-userName_passWord = [] #get usernames and passwords in this list. format="username|password"
+userName_passWord = []
+
+with open(os.path.dirname(__file__) + "/../facebook_accounts.txt", "r") as file:
+    userName_passWord = file.readlines
+
 userNames = [] 
 passWords = []
 accountCount = 0
@@ -43,7 +49,7 @@ def SetProxy_SetUserAgent():
 
 ##-------------------------------------------------------------------------------------------##
 
-#split the format into username and password
+#split the string into username and password
 
 for line in userName_passWord:
     splitter = line.split('|')
@@ -61,6 +67,11 @@ def run_log(userName, passWord, isActive):
         print("FAIL --" + userName + '|' + passWord)
         accountCount = accountCount + 1
 
+# random time.sleep function
+
+def wait():
+    time.sleep(round(random.random.uniform(0.5, 2), 2))
+
 ##-------------------------------------------------------------------------------------------##
 
 #Main App:
@@ -70,30 +81,30 @@ if __name__ == "__main__":
         driver = uc.Chrome(options=SetProxy_SetUserAgent())
         driver.get("https://www.facebook.com")
         try:
-            time.sleep(3,17)
+            time.sleep(3,14)
 
             email_input = driver.find_element(By.ID, "email")
             email_input.click()
             autoit.send(userNames[accountCount])
 
-            time.sleep(0.45)
+            wait()
 
             password_input = driver.find_element(By.ID, "pass")
             password_input.click()
 
-            time.sleep(0.55)
+            wait()
             
             autoit.send(passWords[accountCount])
             login_btn = driver.find_element(By.NAME, "login")
 
-            time.sleep(0.65)
+            wait()
 
             login_btn.click()
             logincheck = WebDriverWait(driver, 5).until(
                 expect.element_to_be_clickable((By.XPATH, "//div[@aria-label='Hesap']"))) 
                 #(Hesap means account in turkish, get the xpath again if you are using another lang option)
 
-            time.sleep(1)
+            wait()
 
             driver.quit()
             run_log(line, passWords[accountCount], True)
