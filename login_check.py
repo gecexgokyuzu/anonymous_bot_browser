@@ -6,6 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
 from selenium.webdriver.support.wait import WebDriverWait
 from chrome_proxy_extension import ProxyExtension
+from user_agent import generate_user_agent
 
 
 userName_passWord = [] #get usernames and passwords in this list. format="username|password"
@@ -32,9 +33,12 @@ proxyPass = splitter[3]
 proxy = (proxyIp, int(proxyPort), proxyUser, proxyPass) #proxy with auth
 proxy_extension = ProxyExtension(*proxy)
 
-def SetProxyDriver():
+def SetProxy_SetUserAgent():
     options = uc.ChromeOptions()
     options.add_argument(f"--load-extension={proxy_extension.directory}")
+    agent = generate_user_agent(os="win", navigator="chrome")
+    options.add_argument(f"--user-agent={agent}")
+    options.add_argument("--disable-blink-features=AutomationControlled")
     return options
 
 ##-------------------------------------------------------------------------------------------##
@@ -43,8 +47,8 @@ def SetProxyDriver():
 
 for line in userName_passWord:
     splitter = line.split('|')
-    userNames.append(splitter[0])
-    passWords.append(splitter[1])
+    userNames.append(splitter[0].strip())
+    passWords.append(splitter[1].strip())
 
 # log keeping function
 
@@ -63,32 +67,31 @@ def run_log(userName, passWord, isActive):
 
 if __name__ == "__main__":
     for line in userNames:
-        driver = uc.Chrome(options=SetProxyDriver())
+        driver = uc.Chrome(options=SetProxy_SetUserAgent())
         driver.get("https://www.facebook.com")
         try:
-            time.sleep(5)
+            time.sleep(3,17)
 
             email_input = driver.find_element(By.ID, "email")
             email_input.click()
             autoit.send(userNames[accountCount])
 
-            time.sleep(0.5)
+            time.sleep(0.45)
 
             password_input = driver.find_element(By.ID, "pass")
             password_input.click()
 
-            time.sleep(0.5)
+            time.sleep(0.55)
             
             autoit.send(passWords[accountCount])
             login_btn = driver.find_element(By.NAME, "login")
 
-            time.sleep(0.5)
+            time.sleep(0.65)
 
             login_btn.click()
-
             logincheck = WebDriverWait(driver, 5).until(
                 expect.element_to_be_clickable((By.XPATH, "//div[@aria-label='Hesap']"))) 
-                        #for turkish webpage(Hesap means account in turkish, get the xpath again if you are using another lang option)
+                #(Hesap means account in turkish, get the xpath again if you are using another lang option)
 
             time.sleep(1)
 
