@@ -20,7 +20,6 @@ userNames = []
 passWords = []
 accountCount = 0
 onlineAccounts = []
-execPath = (os.path.dirname(__file__) + "/../chromedriver.exe")
 
 ##-------------------------------------------------------------------------------------------##
 
@@ -45,7 +44,7 @@ def SetProxy_SetUserAgent():
     options.add_argument(f"--load-extension={proxy_extension.directory}")
     agent = generate_user_agent(os="win", navigator="chrome")
     options.add_argument(f"--user-agent={agent}")
-    options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_argument('--ignore-certificate-errors')
     return options
 
 ##-------------------------------------------------------------------------------------------##
@@ -59,14 +58,14 @@ for line in userName_passWord:
 
 # log keeping function
 
-def run_log(userName, passWord, isActive):
+def run_log(userName, passWord, isActive, accountCount):
     if isActive == True:
         print("OK --" + userName + '|' + passWord)
         onlineAccounts.append(userName + '|' + passWord)
-        accountCount = accountCount + 1
+        accountCount += 1
     else:
         print("FAIL --" + userName + '|' + passWord)
-        accountCount = accountCount + 1
+        accountCount += 1
 
 # random time.sleep function
 
@@ -79,8 +78,9 @@ def wait():
 
 if __name__ == "__main__":
     for line in userNames:
-        driver = uc.Chrome(options=SetProxy_SetUserAgent(), browser_executable_path=execPath)
-        driver.get("https://www.facebook.com")
+        driver = uc.Chrome(options=SetProxy_SetUserAgent())
+        driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+        driver.get("https://whatismyipaddress.com/")
         try:
             time.sleep(3,14)
 
@@ -108,7 +108,7 @@ if __name__ == "__main__":
             wait()
 
             driver.quit()
-            run_log(line, passWords[accountCount], True)
+            run_log(line, passWords[accountCount], True, accountCount)
 
         except Exception as e:
             try:
@@ -117,8 +117,8 @@ if __name__ == "__main__":
                 
                 driver.quit()
 
-                run_log(line, passWords[accountCount], True)
+                run_log(line, passWords[accountCount], True, accountCount)
 
             except Exception as e:
                 driver.quit()
-                run_log(line, passWords[accountCount], False)
+                run_log(line, passWords[accountCount], False, accountCount)
