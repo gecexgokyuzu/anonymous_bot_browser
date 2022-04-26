@@ -14,12 +14,13 @@ from user_agent import generate_user_agent
 userName_passWord = []
 
 with open(os.path.dirname(__file__) + "/../facebook_accounts.txt", "r") as file:
-    userName_passWord = file.readlines
+    userName_passWord = file.readlines()
 
 userNames = [] 
 passWords = []
 accountCount = 0
 onlineAccounts = []
+execPath = (os.path.dirname(__file__) + "/../chromedriver.exe")
 
 ##-------------------------------------------------------------------------------------------##
 
@@ -78,7 +79,7 @@ def wait():
 
 if __name__ == "__main__":
     for line in userNames:
-        driver = uc.Chrome(options=SetProxy_SetUserAgent())
+        driver = uc.Chrome(options=SetProxy_SetUserAgent(), browser_executable_path=execPath)
         driver.get("https://www.facebook.com")
         try:
             time.sleep(3,14)
