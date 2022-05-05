@@ -42,11 +42,12 @@ proxy_extension = ProxyExtension(*proxy)
 
 def SetProxy_SetUserAgent():
     options = uc.ChromeOptions()
-    options.add_argument(f"--load-extension={proxy_extension.directory}")
+    #options.add_argument(f"--load-extension={proxy_extension.directory}")
     options.add_argument('--ignore-certificate-errors')
     options.add_argument("--start-maximized")
     options.add_argument("--disable-infobars")
-    useragent = ua_generator.generate(device='desktop', browser='chrome', platform='win32')
+    useragent = ua_generator.generate(device='desktop', browser='chrome', platform='windows')
+    print(useragent)
     options.add_argument(f"user-agent={useragent}")
     options.set_capability('unhandledPromptBehavior', 'dismiss')
     options.set_capability('pageLoadStrategy', 'none')
@@ -87,12 +88,10 @@ def wait():
 
 if __name__ == "__main__":
     for line in userNames:
-        driver = uc.Chrome(options=SetProxy_SetUserAgent()[0])
+        driver = uc.Chrome(options=SetProxy_SetUserAgent())
         driver.execute_script(
             "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
         # ------------- STEALTH DRIVER ------------- #
-        stealth(driver, languages=["en-US", "en"], vendor="Google Inc.", platform="Win32", webgl_vendor="Intel Inc.",
-                renderer="Intel Iris OpenGL Engine", fix_hairline=False, hardware_concurrency=4, run_on_insecure_origins=False)
         driver.get("https://bot.incolumitas.com/")
         time.sleep(250)
         try:
@@ -136,3 +135,7 @@ if __name__ == "__main__":
             except Exception as e:
                 driver.quit()
                 run_log(line, passWords[accountCount], False, accountCount)
+
+            """
+        stealth(driver, languages=["en-US", "en"], vendor="Google Inc.", platform="Win32", webgl_vendor="Intel Inc.",
+                renderer="Intel Iris OpenGL Engine", fix_hairline=False, hardware_concurrency=4, run_on_insecure_origins=False)"""
