@@ -4,6 +4,7 @@ import os.path
 import random
 import undetected_chromedriver as uc
 import ua_generator
+from random import uniform
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
 from selenium.webdriver.support.wait import WebDriverWait
@@ -43,14 +44,21 @@ proxy_extension = ProxyExtension(*proxy)
 def SetProxy_SetUserAgent():
     options = uc.ChromeOptions()
     #options.add_argument(f"--load-extension={proxy_extension.directory}")
+    options.add_argument('--no-sandbox')
     options.add_argument('--ignore-certificate-errors')
-    options.add_argument("--start-maximized")
-    options.add_argument("--disable-infobars")
+    #options.add_argument('--single-process')
+    options.add_argument('--disable-gpu')
+    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--start-maximized')
+    options.add_argument('--disable-blink-features=AutomationControlled')
+    #options.add_experimental_option('useAutomationExtension', False)
+    #options.add_experimental_option("excludeSwitches", ["enable-automation"])
     useragent = ua_generator.generate(device='desktop', browser='chrome', platform='windows')
     print(useragent)
     options.add_argument(f"user-agent={useragent}")
     options.set_capability('unhandledPromptBehavior', 'dismiss')
     options.set_capability('pageLoadStrategy', 'none')
+    options.add_argument("--disable-infobars")
     return options
 
 ##-------------------------------------------------------------------------------------------##
@@ -79,7 +87,7 @@ def run_log(userName, passWord, isActive, accountCount):
 
 
 def wait():
-    time.sleep(round(random.random.uniform(0.5, 2), 2))
+    time.sleep(round(uniform(0.5, 2), 2))
 
 ##-------------------------------------------------------------------------------------------##
 
@@ -92,6 +100,8 @@ if __name__ == "__main__":
         driver.execute_script(
             "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
         # ------------- STEALTH DRIVER ------------- #
+        stealth(driver, languages=["en-US", "en"], vendor="Google Inc.", platform="Win64", webgl_vendor="Intel Inc.",
+                renderer="Intel Iris OpenGL Engine", fix_hairline=False, hardware_concurrency=4, run_on_insecure_origins=False)
         driver.get("https://bot.incolumitas.com/")
         time.sleep(250)
         try:
@@ -135,7 +145,3 @@ if __name__ == "__main__":
             except Exception as e:
                 driver.quit()
                 run_log(line, passWords[accountCount], False, accountCount)
-
-            """
-        stealth(driver, languages=["en-US", "en"], vendor="Google Inc.", platform="Win32", webgl_vendor="Intel Inc.",
-                renderer="Intel Iris OpenGL Engine", fix_hairline=False, hardware_concurrency=4, run_on_insecure_origins=False)"""
