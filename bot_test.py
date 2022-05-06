@@ -13,8 +13,8 @@ if __name__=="__main__":
     driver.execute_script(
         "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
     # ------------- STEALTH DRIVER ------------- #
-    stealth(driver, fix_hairline=False, hardware_concurrency=4, run_on_insecure_origins=False)
-    driver.get("https://bot.incolumitas.com/")
+    stealth(driver, fix_hairline=False, hardware_concurrency=4, run_on_insecure_origins=False, platform="Win64", webgl_vendor="Google Inc. (Intel)")
+    driver.get("https://gologin.com/check-browser")
     time.sleep(250)
     login_check.wait()
     login_check.wait()
