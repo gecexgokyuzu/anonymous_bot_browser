@@ -3,6 +3,7 @@ import autoit
 import os.path
 import undetected_chromedriver as uc
 import ua_generator
+from os import rmdir
 from random import uniform
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
@@ -62,10 +63,7 @@ def SetProxy_SetUserAgent(username):
     options.add_argument("--disable-infobars")
     options.add_argument("--user-data-dir=" + os.path.dirname(__file__) + "/../User Data/" + username)
     options.add_argument("--profile-directory=Profile 1")
-    with open(os.path.dirname(__file__) + "/../User Data/" + username + "/useragent.txt") as userAgentFile:
-        userAgentFile.write(useragent)
-        userAgentFile.close()
-    return options
+    return options, useragent
 
 ##-------------------------------------------------------------------------------------------##
 
@@ -85,9 +83,13 @@ def run_log(userName, passWord, isActive, accountCount):
         print("OK --" + userName + '|' + passWord)
         onlineAccounts.append(userName + '|' + passWord)
         accountCount += 1
+        with open(os.path.dirname(__file__) + "/../User Data/" + line + "/useragent.txt") as userAgentFile:
+            userAgentFile.write(proxyUseragent[1])
+            userAgentFile.close()
     else:
         print("FAIL --" + userName + '|' + passWord)
         accountCount += 1
+        rmdir(os.path.dirname(__file__) + "/../User Data/" + line)
 
 # random time.sleep function
 
@@ -104,7 +106,7 @@ if __name__ == "__main__":
     for line in userNames:
         proxyUseragent = SetProxy_SetUserAgent(line)
 
-        driver = uc.Chrome(options=proxyUseragent)
+        driver = uc.Chrome(options=proxyUseragent[0])
         driver.execute_script(
             "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
         # ------------- STEALTH DRIVER ------------- #
@@ -152,4 +154,6 @@ if __name__ == "__main__":
 
             except Exception as e:
                 driver.quit()
+                
                 run_log(line, passWords[accountCount], False, accountCount)
+    
