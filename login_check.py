@@ -78,13 +78,13 @@ for line in userName_passWord:
 # log keeping function
 
 
-def run_log(userName, passWord, isActive, accountCount):
+def run_log(userName, passWord, isActive, accountCount, userAgent):
     if isActive == True:
         print("OK --" + userName + '|' + passWord)
         onlineAccounts.append(userName + '|' + passWord)
         accountCount += 1
         with open(os.path.dirname(__file__) + "/../User Data/" + line + "/useragent.txt") as userAgentFile:
-            userAgentFile.write(proxyUseragent[1])
+            userAgentFile.write(userAgent)
             userAgentFile.close()
     else:
         print("FAIL --" + userName + '|' + passWord)
@@ -105,13 +105,11 @@ def wait():
 if __name__ == "__main__":
     for line in userNames:
         proxyUseragent = SetProxy_SetUserAgent(line)
-
         driver = uc.Chrome(options=proxyUseragent[0])
         driver.execute_script(
             "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
         # ------------- STEALTH DRIVER ------------- #
         stealth(driver, fix_hairline=False, hardware_concurrency=4, run_on_insecure_origins=False, platform="Win64", webgl_vendor="Google Inc. (Intel)")
-        
         driver.get("https://bot.incolumitas.com/")
         time.sleep(250)
         try:
@@ -141,7 +139,7 @@ if __name__ == "__main__":
             wait()
 
             driver.quit()
-            run_log(line, passWords[accountCount], True, accountCount)
+            run_log(line, passWords[accountCount], True, accountCount, proxyUseragent[1])
 
         except Exception as e:
             try:
@@ -150,10 +148,10 @@ if __name__ == "__main__":
 
                 driver.quit()
 
-                run_log(line, passWords[accountCount], True, accountCount)
+                run_log(line, passWords[accountCount], True, accountCount, proxyUseragent[1])
 
             except Exception as e:
                 driver.quit()
                 
-                run_log(line, passWords[accountCount], False, accountCount)
+                run_log(line, passWords[accountCount], False, accountCount, proxyUseragent[1])
     
