@@ -1,7 +1,6 @@
 import time
 import autoit
 import os.path
-import random
 import undetected_chromedriver as uc
 import ua_generator
 from random import uniform
@@ -37,28 +36,35 @@ proxyPort = splitter[1]
 proxyUser = splitter[2]
 proxyPass = splitter[3]
 
-proxy = (proxyIp, int(proxyPort), proxyUser, proxyPass)  # proxy with auth
+# proxy with auth
+
+proxy = (proxyIp, int(proxyPort), proxyUser, proxyPass)
 proxy_extension = ProxyExtension(*proxy)
 
+# setting up proxy and user agent
 
-def SetProxy_SetUserAgent():
+def SetProxy_SetUserAgent(username):
     options = uc.ChromeOptions()
     #options.add_argument(f"--load-extension={proxy_extension.directory}")
     #options.add_argument('--no-sandbox')
-    options.add_argument('--ignore-certificate-errors')
+    #options.add_experimental_option('useAutomationExtension', False)
+    #options.add_experimental_option("excludeSwitches", ["enable-automation"])
     #options.add_argument('--single-process')
+    options.add_argument('--ignore-certificate-errors')
     options.add_argument('--disable-gpu')
     options.add_argument('--disable-dev-shm-usage')
     options.add_argument('--start-maximized')
     options.add_argument('--disable-blink-features=AutomationControlled')
-    #options.add_experimental_option('useAutomationExtension', False)
-    #options.add_experimental_option("excludeSwitches", ["enable-automation"])
     useragent = ua_generator.generate(device='desktop', browser='chrome', platform='windows')
-    print(useragent)
     options.add_argument(f"--user-agent={useragent}")
     options.set_capability('unhandledPromptBehavior', 'dismiss')
     options.set_capability('pageLoadStrategy', 'none')
     options.add_argument("--disable-infobars")
+    options.add_argument("--user-data-dir=" + os.path.dirname(__file__) + "/../User Data/" + username)
+    options.add_argument("--profile-directory=Profile 1")
+    with open(os.path.dirname(__file__) + "/../User Data/" + username + "/useragent.txt") as userAgentFile:
+        userAgentFile.write(useragent)
+        userAgentFile.close()
     return options
 
 ##-------------------------------------------------------------------------------------------##
@@ -96,12 +102,14 @@ def wait():
 
 if __name__ == "__main__":
     for line in userNames:
-        driver = uc.Chrome(options=SetProxy_SetUserAgent())
+        proxyUseragent = SetProxy_SetUserAgent(line)
+
+        driver = uc.Chrome(options=proxyUseragent)
         driver.execute_script(
             "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
         # ------------- STEALTH DRIVER ------------- #
-        stealth(driver, languages=["en-US", "en"], vendor="Google Inc.", platform="Win64", webgl_vendor="Intel Inc.",
-                renderer="Intel Iris OpenGL Engine", fix_hairline=False, hardware_concurrency=4, run_on_insecure_origins=False)
+        stealth(driver, fix_hairline=False, hardware_concurrency=4, run_on_insecure_origins=False, platform="Win64", webgl_vendor="Google Inc. (Intel)")
+        
         driver.get("https://bot.incolumitas.com/")
         time.sleep(250)
         try:
