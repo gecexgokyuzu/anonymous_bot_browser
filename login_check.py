@@ -1,9 +1,9 @@
+import shutil
 import time
 import autoit
 import os.path
 import undetected_chromedriver as uc
 import ua_generator
-from os import rmdir
 from random import uniform
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
@@ -37,26 +37,33 @@ proxyPort = splitter[1]
 proxyUser = splitter[2]
 proxyPass = splitter[3]
 
-# proxy with auth
+# proxy with auth and webrtc disabler path
 
 proxy = (proxyIp, int(proxyPort), proxyUser, proxyPass)
 proxy_extension = ProxyExtension(*proxy)
+webrtcDisabler_Path = os.path.dirname(__file__) + "/../WebRTC-Leak-Prevent-Toggle"
 
 # setting up proxy and user agent
 
 def SetProxy_SetUserAgent(username=""):
     options = uc.ChromeOptions()
-    options.add_argument(f"--load-extension={proxy_extension.directory}")
+    userPATH = os.path.dirname(__file__) + "/../User Data/" + username
     
-    # webrtc disabler extension
-    webrtcDisabler_Path = os.path.dirname(__file__) + "/../WebRTC-Leak-Prevent-Toggle"
+    # check to see if data dir has already been created for the current user
+
+    if os.path.isdir(userPATH):
+        with open (userPATH + "/useragent.txt", "r") as useragentTXT:
+            useragent = useragentTXT.read()
+            useragentTXT.close()
+        options.add_argument(f"--user-agent={useragent}")
+        print(useragent)
+    else:
+        useragent = ua_generator.generate(device='desktop', browser='chrome', platform='windows')
+        options.add_argument(f"--user-agent={useragent}")
+        print(useragent)
+    
+    options.add_argument(f"--load-extension={proxy_extension.directory}")
     options.add_argument(f"--load-extension={webrtcDisabler_Path}")
-
-    #options.add_argument('--no-sandbox')
-    #options.add_experimental_option('useAutomationExtension', False)
-    #options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    #options.add_argument('--single-process')
-
     options.add_argument('--disable-blink-features=AutomationControlled')
     options.add_argument('--ignore-certificate-errors')
     options.add_argument('--disable-gpu')
@@ -64,14 +71,11 @@ def SetProxy_SetUserAgent(username=""):
     options.add_argument('--start-maximized')
     options.add_argument('--disable-remote-fonts')
     options.add_argument("--disable-plugins-discovery")
-    useragent = ua_generator.generate(device='desktop', browser='chrome', platform='windows')
-    options.add_argument(f"--user-agent={useragent}")
-    print(useragent)
     options.set_capability('unhandledPromptBehavior', 'dismiss')
     options.set_capability('pageLoadStrategy', 'none')
     options.add_argument("--disable-infobars")
     if username != "":
-        options.add_argument("--user-data-dir=" + os.path.dirname(__file__) + "/../User Data/" + username)
+        options.add_argument("--user-data-dir=" + userPATH)
         options.add_argument("--profile-directory=Profile 1")
     return options, useragent
 
@@ -93,19 +97,18 @@ def run_log(userName, passWord, isActive, accountCount, userAgent):
         print("OK --" + userName + '|' + passWord)
         onlineAccounts.append(userName + '|' + passWord)
         accountCount += 1
-        with open(os.path.dirname(__file__) + "/../User Data/" + line + "/useragent.txt") as userAgentFile:
+        with open(os.path.dirname(__file__) + "/../User Data/" + line + "/useragent.txt", "x") as userAgentFile:
             userAgentFile.write(userAgent)
             userAgentFile.close()
     else:
         print("FAIL --" + userName + '|' + passWord)
         accountCount += 1
-        rmdir(os.path.dirname(__file__) + "/../User Data/" + line)
+        shutil.rmtree(os.path.dirname(__file__) + "/../User Data/" + line)
 
 # random time.sleep function
 
-
 def wait():
-    time.sleep(round(uniform(0.5, 2), 2))
+    time.sleep(round(uniform(0.5, 1), 3))
 
 ##-------------------------------------------------------------------------------------------##
 
@@ -119,12 +122,14 @@ if __name__ == "__main__":
         driver.execute_script(
             "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
         # ------------- STEALTH DRIVER ------------- #
-        stealth(driver, fix_hairline=False, hardware_concurrency=4, run_on_insecure_origins=False, platform="Win32", webgl_vendor="Google Inc. (Intel)")
-        driver.get("https://bot.incolumitas.com/")
-        time.sleep(250)
+        stealth(driver, fix_hairline=True, hardware_concurrency=12, run_on_insecure_origins=False, platform="Win32", webgl_vendor="WebKit", renderer="WebKit WebGL", languages=["tr-TR" , "tr", "en-US", "en"])
         try:
-            time.sleep(3, 14)
-
+            driver.get("https://www.facebook.com/")
+            wait()
+            wait()
+            wait()
+            wait()
+            
             email_input = driver.find_element(By.ID, "email")
             email_input.click()
             autoit.send(userNames[accountCount])
