@@ -9,28 +9,41 @@ from selenium_stealth import stealth
 import login_check
 
 if __name__=="__main__":
-    driver = uc.Chrome(options=login_check.SetProxy_SetUserAgent())
-    driver.execute_script(
-        "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+    optionsUserAgent = login_check.SetProxy_SetUserAgent()
+    driver = uc.Chrome(options=optionsUserAgent[0])
+    driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
     # ------------- STEALTH DRIVER ------------- #
-    stealth(driver, fix_hairline=False, hardware_concurrency=4, run_on_insecure_origins=False, platform="Win64", webgl_vendor="Google Inc. (Intel)")
-    driver.get("https://gologin.com/check-browser")
+    stealth(driver, fix_hairline=True, hardware_concurrency=12, run_on_insecure_origins=False, platform="Win32", webgl_vendor="WebKit", renderer="WebKit WebGL", languages=["tr-TR" , "tr", "en-US", "en"])
+    #driver.get("https://gologin.com/check-browser")
+    driver.get("https://bot.incolumitas.com/")
+    #driver.get("https://bot.sannysoft.com/")
+    #driver.get("https://amiunique.org")
     time.sleep(250)
+    driver.quit()
     login_check.wait()
+    login_check.wait()
+    """
+    autoit.mouse_wheel("down", 6)
+    login_check.wait()
+    autoit.mouse_wheel("down", 6)
+    login_check.wait()
+    """
+    selectedObj = driver.find_element(By.NAME, "userName").location_once_scrolled_into_view
+    print(selectedObj)
+    objXY = list(selectedObj.values())
+    autoit.mouse_move(x=objXY[0], y=objXY[1], speed=15)
+    login_check.wait()  
+    autoit.send("bottington")
+    login_check.wait()
+    autoit.send("{TAB}")
+    login_check.wait()
+    autoit.send("botting")
+    login_check.wait()
+    autoit.send("@fucker.com")
     login_check.wait()
 
-    scroll_target = driver.find_element(By.ID, "newDetectionTests")
-    driver.execute_script('arguments[0].scrollIntoView(true);', scroll_target)
-    login_check.wait()
-
-    driver.find_element(By.NAME, "userName").clear()
-    driver.find_element(By.NAME, "userName").send_keys("bot")
-    login_check.wait()
-
-    driver.find_element(By.NAME, "eMail").clear()
-    driver.find_element(By.NAME, "eMail").send_keys("bot@bottington.com")
-    login_check.wait()
-    login_check.wait()
+    #selectedObj = driver.find_element(By.NAME, "eMail")
+    #selectedObj.click()
 
     Select(driver.find_element(By.NAME, "cookies")).select_by_visible_text("I want all the Cookies")
     login_check.wait()

@@ -44,25 +44,29 @@ proxy_extension = ProxyExtension(*proxy)
 
 # setting up proxy and user agent
 
-def SetProxy_SetUserAgent(username):
+def SetProxy_SetUserAgent(username=""):
     options = uc.ChromeOptions()
-    #options.add_argument(f"--load-extension={proxy_extension.directory}")
+    options.add_argument(f"--load-extension={proxy_extension.directory}")
     #options.add_argument('--no-sandbox')
     #options.add_experimental_option('useAutomationExtension', False)
     #options.add_experimental_option("excludeSwitches", ["enable-automation"])
     #options.add_argument('--single-process')
+    options.add_argument('--disable-blink-features=AutomationControlled')
     options.add_argument('--ignore-certificate-errors')
     options.add_argument('--disable-gpu')
     options.add_argument('--disable-dev-shm-usage')
     options.add_argument('--start-maximized')
-    options.add_argument('--disable-blink-features=AutomationControlled')
+    options.add_argument('--disable-remote-fonts')
+    options.add_argument("--disable-plugins-discovery")
     useragent = ua_generator.generate(device='desktop', browser='chrome', platform='windows')
     options.add_argument(f"--user-agent={useragent}")
+    print(useragent)
     options.set_capability('unhandledPromptBehavior', 'dismiss')
     options.set_capability('pageLoadStrategy', 'none')
     options.add_argument("--disable-infobars")
-    options.add_argument("--user-data-dir=" + os.path.dirname(__file__) + "/../User Data/" + username)
-    options.add_argument("--profile-directory=Profile 1")
+    if username != "":
+        options.add_argument("--user-data-dir=" + os.path.dirname(__file__) + "/../User Data/" + username)
+        options.add_argument("--profile-directory=Profile 1")
     return options, useragent
 
 ##-------------------------------------------------------------------------------------------##
@@ -109,7 +113,7 @@ if __name__ == "__main__":
         driver.execute_script(
             "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
         # ------------- STEALTH DRIVER ------------- #
-        stealth(driver, fix_hairline=False, hardware_concurrency=4, run_on_insecure_origins=False, platform="Win64", webgl_vendor="Google Inc. (Intel)")
+        stealth(driver, fix_hairline=False, hardware_concurrency=4, run_on_insecure_origins=False, platform="Win32", webgl_vendor="Google Inc. (Intel)")
         driver.get("https://bot.incolumitas.com/")
         time.sleep(250)
         try:
