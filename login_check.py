@@ -47,10 +47,16 @@ proxy_extension = ProxyExtension(*proxy)
 def SetProxy_SetUserAgent(username=""):
     options = uc.ChromeOptions()
     options.add_argument(f"--load-extension={proxy_extension.directory}")
+    
+    # webrtc disabler extension
+    webrtcDisabler_Path = os.path.dirname(__file__) + "/../WebRTC-Leak-Prevent-Toggle"
+    options.add_argument(f"--load-extension={webrtcDisabler_Path}")
+
     #options.add_argument('--no-sandbox')
     #options.add_experimental_option('useAutomationExtension', False)
     #options.add_experimental_option("excludeSwitches", ["enable-automation"])
     #options.add_argument('--single-process')
+
     options.add_argument('--disable-blink-features=AutomationControlled')
     options.add_argument('--ignore-certificate-errors')
     options.add_argument('--disable-gpu')
