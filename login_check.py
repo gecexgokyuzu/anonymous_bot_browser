@@ -26,6 +26,8 @@ onlineAccounts = []
 
 # Setting up proxy:
 
+proxyWL = "geo.iproyal.com:12323"
+"""
 with open(os.path.dirname(__file__) + "/../IPRoyal_TR_rotating.txt", "r") as proxyCredentials:
     proxyRaw = proxyCredentials.read()
     proxyCredentials.close()
@@ -36,18 +38,18 @@ proxyIp = splitter[0]
 proxyPort = splitter[1]
 proxyUser = splitter[2]
 proxyPass = splitter[3]
-
+"""
 # webrtc disabler path
 
 webrtcDisabler_Path = os.path.dirname(__file__) + "/../WebRTC-Leak-Prevent-Toggle"
 
 # proxy with auth
-
+"""
 proxy = (proxyIp, int(proxyPort), proxyUser, proxyPass)
 proxy_extension = ProxyExtension(*proxy)
 
 # setting up proxy and user agent
-
+"""
 def SetProxy_SetUserAgent(username=""):
     
     # user path, options instance
@@ -69,7 +71,7 @@ def SetProxy_SetUserAgent(username=""):
         print(useragent)
     options.add_argument(f"--load-extension={webrtcDisabler_Path}")
     #,{proxy_extension.directory}
-    options.add_argument('--ignore-certificate-errors')
+    #options.add_argument('--ignore-certificate-errors')
     options.add_argument('--disable-gpu')
     options.add_argument('--disable-dev-shm-usage')
     options.add_argument('--start-maximized')
@@ -80,6 +82,8 @@ def SetProxy_SetUserAgent(username=""):
     options.add_argument("--disable-infobars")
     options.add_argument("--disable-webgl")
     options.add_argument("--disable-3d-apis")
+    #options.add_argument('--disable-web-security')
+    options.add_argument('--proxy-server=%s' %proxyWL)
     if username != "":
         options.add_argument("--user-data-dir=" + userPATH)
         options.add_argument("--profile-directory=Profile 1")
