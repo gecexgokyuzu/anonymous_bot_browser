@@ -37,34 +37,38 @@ proxyPort = splitter[1]
 proxyUser = splitter[2]
 proxyPass = splitter[3]
 
-# proxy with auth and webrtc disabler path
+# webrtc disabler path
+
+webrtcDisabler_Path = os.path.dirname(__file__) + "/../WebRTC-Leak-Prevent-Toggle"
+
+# proxy with auth
 
 proxy = (proxyIp, int(proxyPort), proxyUser, proxyPass)
 proxy_extension = ProxyExtension(*proxy)
-webrtcDisabler_Path = os.path.dirname(__file__) + "/../WebRTC-Leak-Prevent-Toggle"
 
 # setting up proxy and user agent
 
 def SetProxy_SetUserAgent(username=""):
+    
+    # user path, options instance
+
     options = uc.ChromeOptions()
     userPATH = os.path.dirname(__file__) + "/../User Data/" + username
     
     # check to see if data dir has already been created for the current user
-
-    if os.path.isdir(userPATH):
-        with open (userPATH + "/useragent.txt", "r") as useragentTXT:
-            useragent = useragentTXT.read()
-            useragentTXT.close()
-        options.add_argument(f"--user-agent={useragent}")
-        print(useragent)
+    if username != "":
+        if os.path.isdir(userPATH):
+            with open (userPATH + "/useragent.txt", "r") as useragentTXT:
+                useragent = useragentTXT.read()
+                useragentTXT.close()
+            options.add_argument(f"--user-agent={useragent}")
+            print(useragent)
     else:
         useragent = ua_generator.generate(device='desktop', browser='chrome', platform='windows')
         options.add_argument(f"--user-agent={useragent}")
         print(useragent)
-    
-    options.add_argument(f"--load-extension={proxy_extension.directory}")
     options.add_argument(f"--load-extension={webrtcDisabler_Path}")
-    options.add_argument('--disable-blink-features=AutomationControlled')
+    #,{proxy_extension.directory}
     options.add_argument('--ignore-certificate-errors')
     options.add_argument('--disable-gpu')
     options.add_argument('--disable-dev-shm-usage')
@@ -74,6 +78,8 @@ def SetProxy_SetUserAgent(username=""):
     options.set_capability('unhandledPromptBehavior', 'dismiss')
     options.set_capability('pageLoadStrategy', 'none')
     options.add_argument("--disable-infobars")
+    options.add_argument("--disable-webgl")
+    options.add_argument("--disable-3d-apis")
     if username != "":
         options.add_argument("--user-data-dir=" + userPATH)
         options.add_argument("--profile-directory=Profile 1")
@@ -129,7 +135,7 @@ if __name__ == "__main__":
             wait()
             wait()
             wait()
-            
+
             email_input = driver.find_element(By.ID, "email")
             email_input.click()
             autoit.send(userNames[accountCount])
@@ -157,6 +163,7 @@ if __name__ == "__main__":
             run_log(line, passWords[accountCount], True, accountCount, proxyUseragent[1])
 
         except Exception as e:
+            print(e)
             try:
                 logincheck = WebDriverWait(driver, 5).until(
                     expect.element_to_be_clickable((By.XPATH, "//div[@aria-label='Hesap']")))

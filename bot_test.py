@@ -15,9 +15,10 @@ if __name__=="__main__":
     # ------------- STEALTH DRIVER ------------- #
     stealth(driver, fix_hairline=True, hardware_concurrency=12, run_on_insecure_origins=False, platform="Win32", webgl_vendor="WebKit", renderer="WebKit WebGL", languages=["tr-TR" , "tr", "en-US", "en"])
     #driver.get("https://gologin.com/check-browser")
-    driver.get("https://bot.incolumitas.com/")
+    #driver.get("https://bot.incolumitas.com/")
     #driver.get("https://bot.sannysoft.com/")
-    #driver.get("https://amiunique.org")
+    driver.get("https://amiunique.org")
+    #driver.get("https://www.facebook.com")
     time.sleep(250)
     driver.quit()
     login_check.wait()
