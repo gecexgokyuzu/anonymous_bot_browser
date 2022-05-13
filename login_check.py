@@ -83,7 +83,7 @@ def SetProxy_SetUserAgent(username=""):
     options.add_argument("--disable-webgl")
     options.add_argument("--disable-3d-apis")
     #options.add_argument('--disable-web-security')
-    options.add_argument('--proxy-server=%s' %proxyWL)
+    #options.add_argument('--proxy-server=%s' %proxyWL)
     if username != "":
         options.add_argument("--user-data-dir=" + userPATH)
         options.add_argument("--profile-directory=Profile 1")

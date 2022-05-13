@@ -15,38 +15,50 @@ if __name__=="__main__":
     # ------------- STEALTH DRIVER ------------- #
     stealth(driver, fix_hairline=True, hardware_concurrency=12, run_on_insecure_origins=False, platform="Win32", webgl_vendor="WebKit", renderer="WebKit WebGL", languages=["tr-TR" , "tr", "en-US", "en"])
     #driver.get("https://gologin.com/check-browser")
-    #driver.get("https://bot.incolumitas.com/")
+    driver.get("https://bot.incolumitas.com/")
     #driver.get("https://bot.sannysoft.com/")
-    driver.get("https://amiunique.org")
+    #driver.get("https://amiunique.org")
     #driver.get("https://www.facebook.com")
-    time.sleep(250)
-    driver.quit()
     login_check.wait()
     login_check.wait()
-    """
+    login_check.wait()
+    login_check.wait()
+    login_check.wait()
+    login_check.wait()
+    login_check.wait()
+    login_check.wait()
+    
+    autoit.mouse_wheel("down", 2)
+    autoit.mouse_move(300,150,5)
     autoit.mouse_wheel("down", 6)
+    autoit.mouse_move(250, 250)
     login_check.wait()
-    autoit.mouse_wheel("down", 6)
-    login_check.wait()
-    """
-    selectedObj = driver.find_element(By.NAME, "userName").location_once_scrolled_into_view
-    print(selectedObj)
-    objXY = list(selectedObj.values())
+    autoit.mouse_wheel("down", 4)
+    
+    selectedObj = driver.find_element(By.NAME, "userName")
+    selectedObjCoor = selectedObj.location
+    print(selectedObjCoor)
+    objXY = list(selectedObjCoor.values())
     autoit.mouse_move(x=objXY[0], y=objXY[1], speed=15)
-    login_check.wait()  
-    autoit.send("bottington")
+    selectedObj.click()
     login_check.wait()
+    humanBehaviour.Type("bottington")
     autoit.send("{TAB}")
     login_check.wait()
-    autoit.send("botting")
+    humanBehaviour.Type("botter")
     login_check.wait()
-    autoit.send("@fucker.com")
+    autoit.send("^!q")
+    autoit.send("fucker.com")
     login_check.wait()
 
-    #selectedObj = driver.find_element(By.NAME, "eMail")
-    #selectedObj.click()
 
-    Select(driver.find_element(By.NAME, "cookies")).select_by_visible_text("I want all the Cookies")
+    selectedObj = (driver.find_element(By.NAME, "cookies"))
+    selectedObjCoor = selectedObj.location
+    objXY = list(selectedObjCoor.values())
+    autoit.mouse_move(x=objXY[0], y=objXY[1], speed=15)
+    
+
+    Select(selectedObj).select_by_visible_text("I want all the Cookies")
     login_check.wait()
 
     driver.find_element(By.NAME, "terms").click()
