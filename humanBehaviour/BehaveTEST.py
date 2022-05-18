@@ -12,7 +12,13 @@ import login_check
 import autoit
 import Behave
 import time
+from pyHM import mouse
 
+
+Behave.CurvedMouse()
+
+
+"""
 if __name__=="__main__":
     optionsUserAgent = login_check.SetProxy_SetUserAgent()
     driver = uc.Chrome(options=optionsUserAgent[0])
@@ -20,4 +26,4 @@ if __name__=="__main__":
     # ------------- STEALTH DRIVER ------------- #
     stealth(driver, fix_hairline=True, hardware_concurrency=12, run_on_insecure_origins=False, platform="Win32", webgl_vendor="WebKit", renderer="WebKit WebGL", languages=["tr-TR" , "tr", "en-US", "en"])
     driver.get("about:blank")
-    Behave.MouseB_Spline(driver)
+"""
