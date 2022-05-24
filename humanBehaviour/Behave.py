@@ -1,3 +1,4 @@
+from enum import auto
 import time
 import random
 import autoit
@@ -6,6 +7,8 @@ from selenium.webdriver.remote.webelement import WebElement
 import numpy as np
 import scipy.interpolate as si
 from pyHM import mouse
+import math
+import matplotlib.pyplot as plt
 
 # Screen Width(X) = 1536-1
 # Screen Height(Y) = 864-1
@@ -38,11 +41,11 @@ def KnotCount(mousePos, mouseTarget):
     print("knotCount = " + str(knotCount) + " -- knotCount Absolute = " + str(abs(knotCount)) + " -- knotCount Integer = " + str(int(abs(knotCount))))
     return abs(knotCount)
 
-def CurvedMouse(xAxisTarget=0, yAxisTarget=0, speed=10):
+def CurvedMouse(xAxisTarget=0, yAxisTarget=0):
     mousePosX = autoit.mouse_get_pos()[0]
     mousePosY = autoit.mouse_get_pos()[1]
-    mouseTargetX = 200
-    mouseTargetY = 800
+    mouseTargetX = xAxisTarget
+    mouseTargetY = yAxisTarget
     absXDiff = mousePosX - mouseTargetX 
     absYDiff = mousePosY - mouseTargetY
     
@@ -61,7 +64,7 @@ def CurvedMouse(xAxisTarget=0, yAxisTarget=0, speed=10):
     speedChanges = []
     speedChangesIndex = []
 
-#--------relative speed----------------------------------------------------------------------------
+####--------relative speed-------------------------------------------------------------------------
 
     for i in range(knots):
         if knots - i == 0 or knots - i == 1 or knots - i == knots or knots - i == knots - 1:
@@ -87,25 +90,54 @@ def CurvedMouse(xAxisTarget=0, yAxisTarget=0, speed=10):
     relativeSpeed = list(zip(speedChangesIndex, speedChanges))
     relativeSpeed = dict(relativeSpeed)
 
-#-----move mouse-----------------------------------------------------------------------------------
+####-----move mouse--------------------------------------------------------------------------------
 
     for i, (x, y) in enumerate(zip(x_data, y_data)):
         mouse.move(x, y, relativeSpeed[i])
-        
 
-        
+#------------random movement-----------------------------------------------------------------------
+
+def RandomMovement(isLoad = False, isCircle = False):
+    if isLoad and isCircle:
+        mousePosX = autoit.mouse_get_pos()[0]
+        mousePosY = autoit.mouse_get_pos()[1]
+        #right:
+        mouseRightTargetX = mousePosX + np.random.randint(100, 300)
+        mouseRightTargetY = mousePosY + np.random.randint(100, 200)
+        #bottom:
+        mouseBottomTargetY = mousePosY + np.random.randint(100,200)
+        mouseBottomTargetX = mousePosX + np.random.randint(-100, 100)
+        #left:
+        mouseLeftTargetX = mousePosX - np.random.randint(100, 250)
+        mouseLeftTargetY = mousePosY - np.random.randint(50, 200)
+        #top:
+        mouseTopTargetX = np.random.randint(550, 850)
+        mouseTopTargetY = np.random.randint(300, 400)
+
+        x = np.array([mouseRightTargetX, mouseBottomTargetX, mouseLeftTargetX, mouseTopTargetX])
+        y = np.array([mouseRightTargetY, mouseBottomTargetY, mouseLeftTargetY, mouseTopTargetY])
+
+        #append the starting x,y coordinates
+        x = np.r_[x, x[0]]
+        y = np.r_[y, y[0]]
+
+        #fit splines to x=f(u) and y=g(u), treating both as periodic. also note that s=0
+        #is needed in order to force the spline fit to pass through all the input points.
+        tck, u = si.splprep([x, y], s=0, per=True)
+
+        #evaluate the spline fits for 1000 evenly spaced distance values
+        xi, yi = si.splev(np.linspace(0, 1, 150), tck)
+
+        for x, y in zip(xi, yi):
+            autoit.mouse_move(round(x), round(y), 1)
+
+    elif isLoad == False and isCircle == False:
+        mousePosX = autoit.mouse_get_pos()[0]
+        mousePosY = autoit.mouse_get_pos()[1]
+        mouse.move(mousePosX + np.random.randint(50, 100), mousePosY + np.random.randint(15, 30), 5)
 
 
-def RandomMovement(isLoad = False, iCount: int = 1):
-    if not isLoad:
-        x = random(500,1000)
-        y = random(500,1000)
-        z = random(10,30)
-        autoit.mouse_move(x,y,z)
-    else:
-        centerX = 750
-        centerY = 430
-        iCount += 1
+#-----------element visibility---------------------------------------------------------------------
 
 def is_element_visible_in_viewpoint(driver, element) -> bool:
     return driver.execute_script("var elem = arguments[0],                 " 
@@ -120,13 +152,27 @@ def is_element_visible_in_viewpoint(driver, element) -> bool:
                                  "return false;                            "
                                  , element)
 
-def NatWait(isLoad=False, min: float = 0.5, max: float = 2):
-    if isLoad:
-        time.sleep(round(random.uniform(min, max), 4))
-    else:
-        time.sleep(round(random.uniform(min, max), 3))
+def NatWaitLoad():
+    RandomMovement(isLoad=True, isCircle=True)
 
-def NatWaitLoad(driver: undetected_chromedriver.Chrome, element: WebElement):
+def Pause(isRead: bool = False, isMicro: bool = False):
+    if isRead:
+        time.sleep(np.random.randint(1,3))
+        RandomMovement()
+    elif isMicro:
+        time.sleep(np.random.uniform())
+
+def ScrollIntoView(driver, element, direction = 'down'):
     while not is_element_visible_in_viewpoint(driver, element):
-        NatWait(True, 0.1, 0.)
-        RandomMovement(True)
+        autoit.mouse_wheel(direction, np.random.randint(1, 3))
+        RandomMovement()
+        Pause(True)
+        Pause(True)
+
+def HumanRead(driver: undetected_chromedriver.Chrome, element: WebElement):
+    xy = TranslateCoordinates(element)
+    mouse.move(xy[0], xy[1], 3)
+    mouse.down(button='left')
+    mouse.move(mouse.get_current_position()[0] + 800, mouse.get_current_position()[1] + 150)
+    mouse.up(button='left')
+    mouse.double_click()

@@ -83,7 +83,7 @@ def SetProxy_SetUserAgent(username=""):
     options.add_argument("--disable-webgl")
     options.add_argument("--disable-3d-apis")
     #options.add_argument('--disable-web-security')
-    #options.add_argument('--proxy-server=%s' %proxyWL)
+    options.add_argument('--proxy-server=%s' %proxyWL)
     if username != "":
         options.add_argument("--user-data-dir=" + userPATH)
         options.add_argument("--profile-directory=Profile 1")
@@ -114,11 +114,6 @@ def run_log(userName, passWord, isActive, accountCount, userAgent):
         print("FAIL --" + userName + '|' + passWord)
         accountCount += 1
         shutil.rmtree(os.path.dirname(__file__) + "/../User Data/" + line)
-
-# random time.sleep function
-
-def wait():
-    time.sleep(round(uniform(0.5, 1), 3))
 
 ##-------------------------------------------------------------------------------------------##
 

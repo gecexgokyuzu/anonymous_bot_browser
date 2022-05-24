@@ -7,6 +7,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support.ui import Select
 from selenium_stealth import stealth
 import login_check
+import humanBehaviour.Behave as Behave
 
 if __name__=="__main__":
     optionsUserAgent = login_check.SetProxy_SetUserAgent()
@@ -19,58 +20,18 @@ if __name__=="__main__":
     #driver.get("https://bot.sannysoft.com/")
     #driver.get("https://amiunique.org")
     #driver.get("https://www.facebook.com")
-    login_check.wait()
-    login_check.wait()
-    login_check.wait()
-    login_check.wait()
-    login_check.wait()
-    login_check.wait()
-    login_check.wait()
-    login_check.wait()
-    
-    autoit.mouse_wheel("down", 2)
-    autoit.mouse_move(300,150,5)
-    autoit.mouse_wheel("down", 6)
-    autoit.mouse_move(250, 250)
-    login_check.wait()
-    autoit.mouse_wheel("down", 4)
-    
-    selectedObj = driver.find_element(By.NAME, "userName")
-    selectedObjCoor = selectedObj.location
-    print(selectedObjCoor)
-    objXY = list(selectedObjCoor.values())
-    autoit.mouse_move(x=objXY[0], y=objXY[1], speed=15)
-    selectedObj.click()
-    login_check.wait()
-    humanBehaviour.Type("bottington")
-    autoit.send("{TAB}")
-    login_check.wait()
-    humanBehaviour.Type("botter")
-    login_check.wait()
-    autoit.send("^!q")
-    autoit.send("fucker.com")
-    login_check.wait()
 
+    for i in range(5):
+        try:
+            submitButton = driver.find_element(By.ID, 'submit')
+            break
+        except:
+            Behave.NatWaitLoad()
 
-    selectedObj = (driver.find_element(By.NAME, "cookies"))
-    selectedObjCoor = selectedObj.location
-    objXY = list(selectedObjCoor.values())
-    autoit.mouse_move(x=objXY[0], y=objXY[1], speed=15)
-    
+    Behave.ScrollIntoView(driver, submitButton)
 
-    Select(selectedObj).select_by_visible_text("I want all the Cookies")
-    login_check.wait()
+    paragraph = driver.find_element(By.XPATH, "/html/body/section[2]/div/div/p[1]")
 
-    driver.find_element(By.NAME, "terms").click()
-    login_check.wait()
+    Behave.HumanRead(driver, paragraph)
 
-    driver.find_element(By.ID, "bigCat").click()
-    login_check.wait()
-
-    driver.find_element(By.ID, "submit").click()
-    login_check.wait()
-    login_check.wait()
-    login_check.wait()
-
-    driver.switch_to.alert.accept()
-    time.sleep(250)
+    time.sleep(150)

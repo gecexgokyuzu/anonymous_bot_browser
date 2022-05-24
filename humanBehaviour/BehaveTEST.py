@@ -15,7 +15,7 @@ import time
 from pyHM import mouse
 
 
-Behave.CurvedMouse()
+Behave.RandomMovement(True, True)
 
 
 """
