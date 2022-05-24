@@ -21,7 +21,7 @@ if __name__=="__main__":
     #driver.get("https://amiunique.org")
     #driver.get("https://www.facebook.com")
 
-    for i in range(5):
+    for i in range(10):
         try:
             submitButton = driver.find_element(By.ID, 'submit')
             break
@@ -33,5 +33,5 @@ if __name__=="__main__":
     paragraph = driver.find_element(By.XPATH, "/html/body/section[2]/div/div/p[1]")
 
     Behave.HumanRead(driver, paragraph)
-
+    
     time.sleep(150)

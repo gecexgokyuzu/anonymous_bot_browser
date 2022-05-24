@@ -1,6 +1,4 @@
-from enum import auto
 import time
-import random
 import autoit
 import undetected_chromedriver
 from selenium.webdriver.remote.webelement import WebElement
@@ -10,13 +8,20 @@ from pyHM import mouse
 import math
 import matplotlib.pyplot as plt
 
+
 # Screen Width(X) = 1536-1
 # Screen Height(Y) = 864-1
 
 
-def TranslateCoordinates(xy: WebElement):
+def TranslateCoordinates(xy: WebElement, driver):
+    pageYOffset = driver.execute_script('return window.pageYOffset;')
+    panel_height = driver.execute_script('return window.outerHeight - window.innerHeight;')
     listedXY = list(xy.location.values())
-    listedXY[1] = listedXY[1] + 74
+    listedXY[1] = listedXY[1] + panel_height
+    listedXY[1] = listedXY[1] - pageYOffset
+    print("Page Y Offset: " + str(pageYOffset))
+    print("Panel Height: " + str(panel_height))
+    print("Element XY: " + str(listedXY))
     return listedXY
 
 def OffsetDegree(data, index, arrayLength):
@@ -134,7 +139,10 @@ def RandomMovement(isLoad = False, isCircle = False):
     elif isLoad == False and isCircle == False:
         mousePosX = autoit.mouse_get_pos()[0]
         mousePosY = autoit.mouse_get_pos()[1]
-        mouse.move(mousePosX + np.random.randint(50, 100), mousePosY + np.random.randint(15, 30), 5)
+        if mousePosX < 1300 and mousePosY < 600:
+            mouse.move(mousePosX + np.random.randint(50, 100), mousePosY + np.random.randint(15, 30), 5)
+        else:
+            mouse.move(mousePosX - np.random.randint(50, 100), mousePosY - np.random.randint(15, 30), 5)
 
 
 #-----------element visibility---------------------------------------------------------------------
@@ -164,15 +172,15 @@ def Pause(isRead: bool = False, isMicro: bool = False):
 
 def ScrollIntoView(driver, element, direction = 'down'):
     while not is_element_visible_in_viewpoint(driver, element):
-        autoit.mouse_wheel(direction, np.random.randint(1, 3))
+        autoit.mouse_wheel(direction, 1)
         RandomMovement()
-        Pause(True)
-        Pause(True)
+        Pause(isMicro=True)
 
 def HumanRead(driver: undetected_chromedriver.Chrome, element: WebElement):
-    xy = TranslateCoordinates(element)
-    mouse.move(xy[0], xy[1], 3)
+    xy = TranslateCoordinates(driver=driver, xy=element)
+    mouse.move(xy[0], xy[1], 1)
+    print("Mouse Location after moving" + str(autoit.mouse_get_pos()))
     mouse.down(button='left')
-    mouse.move(mouse.get_current_position()[0] + 800, mouse.get_current_position()[1] + 150)
+    mouse.move(mouse.get_current_position()[0] + 1200, mouse.get_current_position()[1] + 150, 1)
     mouse.up(button='left')
     mouse.double_click()
